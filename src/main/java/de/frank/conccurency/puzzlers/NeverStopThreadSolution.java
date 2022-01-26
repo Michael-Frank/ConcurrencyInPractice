@@ -8,8 +8,8 @@ public class NeverStopThreadSolution {
 
     public static void main(String[] args) throws InterruptedException {
         Thread backgroundThread = new Thread(() -> {
-            //without volatile the jvm compiler sees that stopRequested is static and after 10.000 iterations of not
-            // seeing a change to its value, the compiler optimizes to:
+            //without volatile, the jvm compiler sees that 'stopRequested' is static.
+            // After 10.000 iterations of not  seeing a change to its value, the compiler optimizes to:
             //if(!stopRequested)
             //    while (true) i++;
 

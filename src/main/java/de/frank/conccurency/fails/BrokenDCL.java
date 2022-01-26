@@ -7,37 +7,45 @@ import java.util.concurrent.CyclicBarrier;
 
 public class BrokenDCL {
     public static void main(String[] args) {
-        int threads = 16;
-        CyclicBarrier waitForAll = new CyclicBarrier(threads);
-        for (int i = 0; i < threads; i++) {
-            Thread t = new Thread(() -> stressTest(waitForAll));
+        int threadCount = 16;
+        CyclicBarrier waitForAllThreadsStarted = new CyclicBarrier(threadCount);
+        for (int i = 0; i < threadCount; i++) {
+            Thread t = new Thread(() -> stressTest(waitForAllThreadsStarted));
             t.start();
         }
-        for (int i = 0; i < threads; i++) {
+        for (int i = 0; i < threadCount; i++) {
             Thread t = new Thread(() -> stressTest(null));
             t.start();
         }
     }
 
-    private static void stressTest(CyclicBarrier waitForAll) {
+    private static void stressTest(CyclicBarrier waitForAllThreadsStarted) {
         try {
-            if (waitForAll != null)
-                waitForAll.await();
-            InitMeOnce lo = InitMeOnce.getInstance();
-            int res;
-            if (lo != null) {
-                res = lo.x00 + lo.x01 + lo.x02 + lo.x03;
-            } else {
-                res = -1;
-            }
-            if (res != 4 * 42) {
-                System.out.println("Failure to initialize!: " + res);
-                System.exit(1);
-            }
+            if (waitForAllThreadsStarted != null)
+                waitForAllThreadsStarted.await();
+
+            //the object to test
+            InitMeOnce objectUnderTest = InitMeOnce.getInstance();
+
+            //check
+            verifyInitializedConsitently(objectUnderTest);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void verifyInitializedConsitently(InitMeOnce lo) {
+        int res;
+        if (lo != null) {
+            res = lo.x00 + lo.x01 + lo.x02 + lo.x03;
+        } else {
+            res = -1;
+        }
+        if (res != 4 * 42) {
+            System.out.println("Failure to initialize consistently!: " + res);
+            System.exit(1);
         }
     }
 

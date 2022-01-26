@@ -105,6 +105,7 @@ public class LazyLoaderBenchmarkJMH {
         @Getter(lazy = true)
         private final String lombokLazyGetter = expensiveOperation();
 
+
         //guava - same as doubleCheckedLockingBool - it has a nicer usage pattern then apaches Lazy.. abstract class extensions
         com.google.common.base.Supplier<String> guava = Suppliers.memoize(this::expensiveOperation);
 
@@ -333,8 +334,8 @@ public class LazyLoaderBenchmarkJMH {
 
     public static class AtomicSafeLazyLoader<T> implements Supplier<T> {
 
-        private Supplier<T> supplier;
-        private AtomicReference<T> object = new AtomicReference<>();
+        private final Supplier<T> supplier;
+        private final AtomicReference<T> object = new AtomicReference<>();
 
         private AtomicSafeLazyLoader(Supplier<T> supplier) {
             this.supplier = Objects.requireNonNull(supplier);

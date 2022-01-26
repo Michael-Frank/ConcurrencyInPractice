@@ -4,7 +4,6 @@ import static de.frank.conccurency.fails.Helper.printThreadLockInfo;
 
 public class Deadlock_0 {
 
-
     public static void main(String args[]) {
         MyBusinessObject1 mbo1 = new MyBusinessObject1();
         MyBusinessObject2 mbo2 = new MyBusinessObject2();
